@@ -1,0 +1,13 @@
+[programs.localnet]
+spotpass_core = "SpotPass1111111111111111111111111111111111111"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+build = "anchor build"
+test = "anchor test"

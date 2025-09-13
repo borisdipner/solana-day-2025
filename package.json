@@ -1,0 +1,15 @@
+{
+  "name": "spotpass",
+  "version": "0.1.0",
+  "description": "SpotPass — Time-Sliced Tokenization MVP for Solana",
+  "scripts": {
+    "build": "anchor build",
+    "test": "anchor test",
+    "frontend:dev": "cd app && npm run dev",
+    "frontend:build": "cd app && npm run build",
+    "frontend:install": "cd app && npm install"
+  },
+  "keywords": ["solana", "anchor", "tokenization", "time-slicing", "parking"],
+  "author": "SpotPass Team",
+  "license": "MIT"
+}
