@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SpotPass — Tokenization of Time Assets</title>
+  <meta name="description" content="SpotPass — токенизация времени как актива: time‑sliced слоты для парковок и других ресурсов на Solana." />
+  <meta property="og:title" content="SpotPass — Tokenization of Time Assets" />
+  <meta property="og:description" content="Time‑Sliced utility‑NFT: бронируй и монетизируй время ресурса (парковка, корты, переговорки) на Solana." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#0ea5e9"/>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop stop-color='%2300d4ff'/%3E%3Cstop offset='1' stop-color='%237a5cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='46' fill='url(%23g)'/%3E%3Cpath d='M30 52h40a2 2 0 0 1 0 4H30a2 2 0 0 1 0-4Zm0-12h40a2 2 0 0 1 0 4H30a2 2 0 0 1 0-4Z' fill='white'/%3E%3C/svg%3E"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass{backdrop-filter:saturate(140%) blur(12px);}
+    .shine{background:linear-gradient(110deg,rgba(255,255,255,.0) 0%,rgba(255,255,255,.5) 40%,rgba(255,255,255,.0) 60%);background-size:200% 100%;animation:shine 4s linear infinite;}
+    @keyframes shine{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  </style>
+</head>
+<body class="bg-slate-950 text-white">
+  <!-- Hero -->
+  <header class="relative overflow-hidden">
+    <div class="absolute inset-0 opacity-30" aria-hidden>
+      <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="grad" x1="0" x2="1" y1="0" y2="1">
+            <stop stop-color="#00d4ff"/>
+            <stop offset="1" stop-color="#7a5cff"/>
+          </linearGradient>
+        </defs>
+        <g fill="url(#grad)" opacity="0.6">
+          <circle cx="15%" cy="20%" r="180"/>
+          <circle cx="85%" cy="-10%" r="240"/>
+          <circle cx="90%" cy="80%" r="200"/>
+        </g>
+      </svg>
+    </div>
+    <div class="max-w-7xl mx-auto px-6 pt-16 pb-24 relative">
+      <nav class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-violet-500 grid place-items-center font-bold">S</div>
+          <span class="font-semibold tracking-tight">SpotPass</span>
+        </div>
+        <div class="hidden sm:flex items-center gap-6 text-sm text-slate-300">
+          <a href="#features" class="hover:text-white">Функции</a>
+          <a href="#how" class="hover:text-white">Как это работает</a>
+          <a href="#architecture" class="hover:text-white">Архитектура</a>
+          <a href="#faq" class="hover:text-white">FAQ</a>
+          <a href="https://github.com/your-org/spotpass" target="_blank" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20">GitHub</a>
+        </div>
+      </nav>
+      <div class="mt-16 grid md:grid-cols-2 gap-10 items-center">
+        <div>
+          <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
+            Токенизация времени
+            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500">Time‑Sliced слоты на Solana</span>
+          </h1>
+          <p class="mt-5 text-slate-300 text-lg">Монетизируйте «мёртвые часы» парковок, кортов и переговорок. Создавайте слоты, бронируйте, передавайте — всё on‑chain.</p>
+          <div class="mt-7 flex flex-wrap gap-3">
+            <a href="#demo" class="px-5 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-violet-500 font-semibold">Смотреть демо</a>
+            <a href="https://forms.gle/KFiqS6mdEWJS9FfK9" target="_blank" class="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20">Подать работу</a>
+          </div>
+          <div class="mt-6 flex items-center gap-4 opacity-80">
+            <img alt="phantom" class="h-6" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Phantom_by_Alesia_Korotkova.svg"/>
+            <img alt="solana" class="h-6" src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Solana_logo.png"/>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="rounded-2xl glass bg-white/5 border border-white/10 p-5 shadow-2xl">
+            <div class="h-9 w-32 mb-4 rounded-full shine"></div>
+            <div class="grid sm:grid-cols-2 gap-3 text-sm">
+              <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div class="text-slate-400">Ресурс</div>
+                <div class="font-semibold mt-1">Parking A‑12</div>
+                <div class="mt-2 text-xs text-slate-400">metadata_uri: ipfs://…</div>
+              </div>
+              <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div class="text-slate-400">Слот</div>
+                <div class="font-semibold mt-1">10:00–11:00</div>
+                <div class="mt-2 text-xs text-slate-400">Цена: 0.01 SOL</div>
+              </div>
+              <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div class="text-slate-400">Статус</div>
+                <div class="font-semibold mt-1">Reserved → Settled</div>
+              </div>
+              <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div class="text-slate-400">Квитанция</div>
+                <div class="font-semibold mt-1">QR / Slice ID</div>
+              </div>
+            </div>
+          </div>
+          <div class="absolute -z-10 inset-0 blur-3xl bg-gradient-to-tr from-cyan-400/20 to-violet-500/20 rounded-3xl"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Features -->
+  <section id="features" class="py-20">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">Что умеет SpotPass</h2>
+      <p class="text-slate-300 mt-2">MVP‑функции для быстрого пилота и демо.</p>
+      <div class="mt-10 grid md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div class="text-cyan-300 font-semibold">Создание ресурса</div>
+          <p class="text-slate-300 mt-2">Регистрируйте парковку/корт/переговорку с метаданными (IPFS/URI).</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div class="text-cyan-300 font-semibold">Нарезка времени</div>
+          <p class="text-slate-300 mt-2">Создавайте слоты: start/end/price. Управляйте доступом через статусы.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div class="text-cyan-300 font-semibold">Бронирование</div>
+          <p class="text-slate-300 mt-2">Покупатель резервирует слот и получает on‑chain подтверждение.</p>
+        </div>
+      </div>
+      <div class="mt-6 grid md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div class="text-cyan-300 font-semibold">Квитанция</div>
+          <p class="text-slate-300 mt-2">QR/ID слота для проверки доступа на месте.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div class="text-cyan-300 font-semibold">Моки переводов</div>
+          <p class="text-slate-300 mt-2">Для демо: статусы и события. В Roadmap — реальный escrow и SPL/NFT.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div class="text-cyan-300 font-semibold">Dev‑friendly</div>
+          <p class="text-slate-300 mt-2">Anchor + Next.js; легко расширять и деплоить.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how" class="py-20 bg-slate-900/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">Как это работает</h2>
+      <ol class="mt-8 grid md:grid-cols-4 gap-6">
+        <li class="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div class="text-slate-400 text-sm">Шаг 1</div>
+          <div class="font-semibold mt-1">Создать ресурс</div>
+          <p class="text-slate-300 mt-2">Owner инициализирует Asset (PDA) с metadata_uri.</p>
+        </li>
+        <li class="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div class="text-slate-400 text-sm">Шаг 2</div>
+          <div class="font-semibold mt-1">Нарезать слоты</div>
+          <p class="text-slate-300 mt-2">CreateTimeSlice: start/end/price → Slice (PDA).</p>
+        </li>
+        <li class="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div class="text-slate-400 text-sm">Шаг 3</div>
+          <div class="font-semibold mt-1">Резерв</div>
+          <p class="text-slate-300 mt-2">ReserveSlice помечает слот и логирует событие.</p>
+        </li>
+        <li class="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div class="text-slate-400 text-sm">Шаг 4</div>
+          <div class="font-semibold mt-1">Завершение</div>
+          <p class="text-slate-300 mt-2">После end_ts: Settle/Cancel, статус обновляется.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Architecture SVG -->
+  <section id="architecture" class="py-20">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">Архитектура (MVP)</h2>
+      <div class="mt-8 rounded-2xl bg-white/5 border border-white/10 p-6 overflow-x-auto">
+        <svg width="1024" height="360" viewBox="0 0 1024 360" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="a" x1="0" x2="1" y1="0" y2="1">
+              <stop stop-color="#00d4ff"/>
+              <stop offset="1" stop-color="#7a5cff"/>
+            </linearGradient>
+          </defs>
+          <!-- Wallet -->
+          <rect x="40" y="60" width="220" height="120" rx="16" fill="url(#a)" opacity="0.85"/>
+          <text x="150" y="120" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">Wallet (Phantom)</text>
+          <text x="150" y="145" text-anchor="middle" fill="#eef" font-size="12">Подпись транзакций</text>
+          <!-- Front -->
+          <rect x="302" y="40" width="280" height="160" rx="16" fill="#101827" stroke="#334155"/>
+          <text x="442" y="100" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">Frontend</text>
+          <text x="442" y="125" text-anchor="middle" fill="#9fb" font-size="12">Next.js + Wallet Adapter</text>
+          <!-- Program -->
+          <rect x="628" y="40" width="356" height="260" rx="16" fill="#0b1220" stroke="#334155"/>
+          <text x="806" y="80" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">Anchor Program</text>
+          <text x="806" y="105" text-anchor="middle" fill="#9fb" font-size="12">PDA: Asset / Slice</text>
+          <!-- PDAs -->
+          <rect x="660" y="130" width="140" height="80" rx="12" fill="#111827" stroke="#475569"/>
+          <text x="730" y="170" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">Asset</text>
+          <rect x="826" y="130" width="140" height="80" rx="12" fill="#111827" stroke="#475569"/>
+          <text x="896" y="170" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">Slice</text>
+          <!-- Arrows -->
+          <path d="M260 120 H300" stroke="#7dd3fc" stroke-width="2" marker-end="url(#arrow)"/>
+          <path d="M582 120 H628" stroke="#7dd3fc" stroke-width="2" marker-end="url(#arrow)"/>
+          <path d="M826 220 V260" stroke="#a78bfa" stroke-width="2"/>
+          <text x="826" y="280" text-anchor="middle" fill="#a78bfa" font-size="12">Events / Status</text>
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#7dd3fc"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo / CTA -->
+  <section id="demo" class="py-20 bg-slate-900/40">
+    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
+      <div>
+        <h2 class="text-3xl font-bold">Демо‑сценарий</h2>
+        <ul class="mt-6 space-y-3 text-slate-300 list-disc pl-5">
+          <li>Создать ресурс (metadata_uri)</li>
+          <li>Нарезать 1–2 слота (start/end/price)</li>
+          <li>Забронировать слот другим кошельком</li>
+          <li>Завершить или отменить слот</li>
+        </ul>
+        <div class="mt-8 flex gap-3">
+          <a href="https://github.com/your-org/spotpass" target="_blank" class="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20">Код (GitHub)</a>
+          <a href="#faq" class="px-5 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-violet-500 font-semibold">Частые вопросы</a>
+        </div>
+      </div>
+      <div class="rounded-2xl bg-white/5 border border-white/10 p-6">
+        <div class="aspect-video rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 grid place-items-center text-slate-400">
+          Скринкаст / видео‑демо (1–2 мин)
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="py-20">
+    <div class="max-w-5xl mx-auto px-6">
+      <h2 class="text-3xl font-bold">FAQ</h2>
+      <div class="mt-10 space-y-6">
+        <details class="group rounded-2xl bg-white/5 border border-white/10 p-6">
+          <summary class="cursor-pointer font-semibold flex items-center justify-between">Это реальные токены или моки?
+            <span class="ml-3 text-sm text-slate-400 group-open:hidden">развернуть</span>
+            <span class="ml-3 text-sm text-slate-400 hidden group-open:inline">свернуть</span>
+          </summary>
+          <p class="mt-3 text-slate-300">В MVP денежные переводы промаркированы статусами/событиями. Roadmap: escrow, SPL‑квитанции, Metaplex NFT.</p>
+        </details>
+        <details class="group rounded-2xl bg-white/5 border border-white/10 p-6">
+          <summary class="cursor-pointer font-semibold flex items-center justify-between">Какие кейсы кроме парковки?
+            <span class="ml-3 text-sm text-slate-400 group-open:hidden">развернуть</span>
+            <span class="ml-3 text-sm text-slate-400 hidden group-open:inline">свернуть</span>
+          </summary>
+          <p class="mt-3 text-slate-300">Спорт‑корты, переговорки, коворкинги, ивенты, зарядные станции EV, склады — любой ресурс, где важно время доступа.</p>
+        </details>
+        <details class="group rounded-2xl bg-white/5 border border-white/10 p-6">
+          <summary class="cursor-pointer font-semibold flex items-center justify-between">Сложно ли запустить пилот?
+            <span class="ml-3 text-sm text-slate-400 group-open:hidden">развернуть</span>
+            <span class="ml-3 text-sm text-slate-400 hidden group-open:inline">свернуть</span>
+          </summary>
+          <p class="mt-3 text-slate-300">Нет: достаточно 1 ресурса и 3 слотов, фронт и контракт уже готовы для демо. Дальше наращиваем функционал.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-10 border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-violet-500 grid place-items-center font-bold">S</div>
+        <span class="text-slate-300">© 2025 SpotPass</span>
+      </div>
+      <div class="text-sm text-slate-400">Built for Solana Day • Караганда</div>
+    </div>
+  </footer>
+</body>
+</html>
